@@ -93,8 +93,25 @@
 		`
 	}
 
-	//use a delegate instead?
+	function renderArticlePopUp(){
+		return `
+	    <div id="pop-up">
+	      <a href="#" class="close-pop-up">X</a>
+	      <div class="wrapper">
+	        <h1>Article title here</h1>
+	        <p>
+	        Article description/content here.
+	        </p>
+	        <a href="#" class="pop-up-action" target="_blank">Read more from source</a>
+	      </div>
+	    </div>
+		`
+	}
+
+  delegate('header','click','.news-source', fetchPosts)
+
 	function fetchPosts(event){
+		// debugger
 		event.preventDefault()
 		renderLoading(state, container)
 		fetch(event.currentTarget.href).then((response) => {
@@ -104,9 +121,5 @@
 			console.log(dataAsJson)
 		})
 	}
-
-	Array.from(document.querySelectorAll('.news-source')).forEach(function(source){
-	  source.addEventListener('click', fetchPosts)
-	})
 
 })()
