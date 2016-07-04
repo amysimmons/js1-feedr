@@ -25,11 +25,11 @@
 		],
 		articles: []
 	}
-	
+
 	renderHeader(state, header)
 
 	function renderHeader(data, into){
-	   into.innerHTML = ` 
+	   into.innerHTML = `
 		   <section class="wrapper">
 		      <a href="#"><h1>Feedr</h1></a>
 		      <nav>
@@ -39,11 +39,11 @@
 		        </section>
 		        <ul>
 		          <li><a href="#">News Source: <span>Source Name</span></a>
-		          	<ul>			
-						${data.newsSources.map((item) => {
-							return `<li>${renderSourceListItem(item)}</li>`
-						}).join('')}
-					</ul>
+		          	<ul>
+									${data.newsSources.map((item) => {
+										return `<li>${renderSourceListItem(item)}</li>`
+									}).join('')}
+								</ul>
 		          </li>
 		        </ul>
 		      </nav>
@@ -64,11 +64,32 @@
 		`
 	}
 
-	function renderNews(data, into) {
+	function renderNewsList(data, into) {
 		into.innerHTML = `
 			<section id="main" class="wrapper">
 				<h1>news to come</h1>
+				${data.articles.map((article) => {
+					return `${renderArticle(article)}`
+				}).join('')}
 			</section>
+		`
+	}
+
+	function renderArticle(article){
+		return `
+      <article class="article">
+        <section class="featured-image">
+          <img src="images/article_placeholder_1.jpg" alt="" />
+        </section>
+        <section class="article-content">
+          <a href="#"><h3>Test article title</h3></a>
+          <h6>Lifestyle</h6>
+        </section>
+        <section class="impressions">
+          526
+        </section>
+        <div class="clearfix"></div>
+      </article>
 		`
 	}
 
@@ -79,7 +100,7 @@
 		fetch(event.currentTarget.href).then((response) => {
 			return response.json()
 		}).then((dataAsJson) => {
-			renderNews(state, container)
+			renderNewsList(state, container)
 			console.log(dataAsJson)
 		})
 	}
