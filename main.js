@@ -22,7 +22,8 @@
 	  		url: 'https://www.reddit.com/top.json',
 	  		selected: false
 	  	}
-		]
+		],
+		articles: []
 	}
 	
 	renderHeader(state, header)
@@ -65,10 +66,13 @@
 
 	function renderNews(data, into) {
 		into.innerHTML = `
-			<h1>news to come</h1>
+			<section id="main" class="wrapper">
+				<h1>news to come</h1>
+			</section>
 		`
 	}
 
+	//use a delegate instead?
 	function fetchPosts(event){
 		event.preventDefault()
 		renderLoading(state, container)
