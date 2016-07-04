@@ -7,32 +7,25 @@
 
 (function() {
 
-	var container = document.querySelector('#container')
 	var header = document.querySelector('header')
+	var container = document.querySelector('#container')
 	var state = {
-		loading: true,
+		loading: false,
 		newsSources: [
 	  	{
 	  		name: 'Mashable',
-	  		url: 'http://mashable.com/stories.json'
+	  		url: 'https://crossorigin.me/http://mashable.com/stories.json',
+	  		selected: false
 	  	},
 	  	{
 	  		name: 'Reddit',
-	  		url: 'https://www.reddit.com/top.json'
+	  		url: 'https://www.reddit.com/top.json',
+	  		selected: false
 	  	}
-		],
-		selected: ''
+		]
 	}
-
-
-	//renderLoading(state, container)
+	
 	renderHeader(state, header)
-
-	function renderLoading(data, into) {
-		into.innerHTML = `
-			<div id="pop-up" class="loader"></div>
-		`
-	}
 
 	function renderHeader(data, into){
 	   into.innerHTML = ` 
@@ -60,8 +53,35 @@
 
 	function renderSourceListItem(item) {
 		return `
-			<a href="">${item.name}</a>
+			<a href="${item.url}" class="news-source">${item.name}</a>
 		`
 	}
+
+	function renderLoading(data, into) {
+		into.innerHTML = `
+			<div id="pop-up" class="loader"></div>
+		`
+	}
+
+	function renderNews(data, into) {
+		into.innerHTML = `
+			<h1>news to come</h1>
+		`
+	}
+
+	function fetchPosts(event){
+		event.preventDefault()
+		renderLoading(state, container)
+		fetch(event.currentTarget.href).then((response) => {
+			return response.json()
+		}).then((dataAsJson) => {
+			renderNews(state, container)
+			console.log(dataAsJson)
+		})
+	}
+
+	Array.from(document.querySelectorAll('.news-source')).forEach(function(source){
+	  source.addEventListener('click', fetchPosts)
+	})
 
 })()
