@@ -15,7 +15,7 @@
 	  	{
 	  		name: 'Mashable',
 	  		url: 'https://crossorigin.me/http://mashable.com/stories.json',
-	  		selected: false
+	  		selected: true
 	  	},
 	  	{
 	  		name: 'Reddit',
@@ -41,7 +41,7 @@
 		          <li><a href="#">News Source: <span>Source Name</span></a>
 		          	<ul>
 									${data.newsSources.map((item) => {
-										return `<li>${renderSourceListItem(item)}</li>`
+										return `<li>${renderHeaderItem(item)}</li>`
 									}).join('')}
 								</ul>
 		          </li>
@@ -52,7 +52,7 @@
 	    `
 	}
 
-	function renderSourceListItem(item) {
+	function renderHeaderItem(item) {
 		return `
 			<a href="${item.url}" class="news-source">${item.name}</a>
 		`
@@ -64,7 +64,7 @@
 		`
 	}
 
-	function renderNewsList(data, into) {
+	function renderArticleList(data, into) {
 		into.innerHTML = `
 			<section id="main" class="wrapper">
 				<h1>news to come</h1>
@@ -108,18 +108,41 @@
 		`
 	}
 
-  delegate('header','click','.news-source', fetchPosts)
+	function getNewsSource(name){
+		return state.newsSources.find((source) => {
+			if (source.name = name){
+				return source;
+			}
+		})
+	}
 
-	function fetchPosts(event){
-		// debugger
-		event.preventDefault()
+	function fetchPosts(url){
+		debugger
 		renderLoading(state, container)
-		fetch(event.currentTarget.href).then((response) => {
+		fetch(url).then((response) => {
 			return response.json()
 		}).then((dataAsJson) => {
-			renderNewsList(state, container)
+			renderArticleList(state, container)
 			console.log(dataAsJson)
 		})
 	}
 
+	function handleFilterClick(event){
+		console.log('filter click')
+		event.preventDefault()
+		debugger
+		if(!getNewsSource(event.target.innerHTML).selected){
+			debugger
+			fetchPosts(event.target.href)
+		}
+	}
+
+	function handleArticleClick(event){
+		event.preventDefault()
+	}
+
+
+  delegate('header','click','.news-source', handleFilterClick)
+  delegate('header','click','.article', handleArticleClick)
+  fetchPosts(state.newsSources[0].url)
 })()
