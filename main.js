@@ -15,12 +15,14 @@
 	  	{
 	  		name: 'Mashable',
 	  		url: 'https://crossorigin.me/http://mashable.com/stories.json',
-	  		selected: true
+	  		selected: false,
+	  		mapDataFunction: mapMashableData
 	  	},
 	  	{
 	  		name: 'Reddit',
 	  		url: 'https://www.reddit.com/top.json',
-	  		selected: false
+	  		selected: false,
+	  		mapDataFunction: mapRedditData
 	  	}
 		],
 		articles: []
@@ -67,7 +69,6 @@
 	function renderArticleList(data, into) {
 		into.innerHTML = `
 			<section id="main" class="wrapper">
-				<h1>news to come</h1>
 				${data.articles.map((article) => {
 					return `${renderArticle(article)}`
 				}).join('')}
@@ -79,14 +80,14 @@
 		return `
       <article class="article">
         <section class="featured-image">
-          <img src="images/article_placeholder_1.jpg" alt="" />
+          <img src="${article.imgSrc}" alt="" />
         </section>
         <section class="article-content">
-          <a href="#"><h3>Test article title</h3></a>
-          <h6>Lifestyle</h6>
+          <a href="#"><h3>${article.title}</h3></a>
+          <h6>${article.category}</h6>
         </section>
         <section class="impressions">
-          526
+          ${article.impressions}
         </section>
         <div class="clearfix"></div>
       </article>
@@ -110,30 +111,56 @@
 
 	function getNewsSource(name){
 		return state.newsSources.find((source) => {
-			if (source.name = name){
+			if (source.name == name){
 				return source;
 			}
 		})
 	}
 
-	function fetchPosts(url){
-		debugger
+	function deselectHeaderItems(){
+		state.newsSources.forEach((source)=>{
+			source.selected = false;
+		})
+	}
+
+	function mapMashableData(data){
+		[data.new, data.hot, data.rising].forEach((dataSet)=>{
+			dataSet.forEach((item)=> {
+				var article = {
+					imgSrc: item.image,
+					link: item.link,
+					title: item.title,
+					category: item.channel,
+					impressions: item.shares.total,
+					description: item.content.plain,
+					postDate: item.post_date
+				}
+				state.articles.push(article)
+			})
+		})
+		renderArticleList(state, container)
+	}
+
+	function mapRedditData(data){
+		renderArticleList(state, container)
+	}
+
+	function fetchPosts(newsSource){
 		renderLoading(state, container)
-		fetch(url).then((response) => {
+		fetch(newsSource.url).then((response) => {
 			return response.json()
 		}).then((dataAsJson) => {
-			renderArticleList(state, container)
-			console.log(dataAsJson)
+			return newsSource.mapDataFunction(dataAsJson)
 		})
 	}
 
 	function handleFilterClick(event){
-		console.log('filter click')
 		event.preventDefault()
-		debugger
-		if(!getNewsSource(event.target.innerHTML).selected){
-			debugger
-			fetchPosts(event.target.href)
+		var newsSource = getNewsSource(event.target.innerHTML);
+		if(!newsSource.selected){
+			deselectHeaderItems();
+			newsSource.selected = true;
+			fetchPosts(newsSource)
 		}
 	}
 
@@ -141,8 +168,7 @@
 		event.preventDefault()
 	}
 
-
   delegate('header','click','.news-source', handleFilterClick)
   delegate('header','click','.article', handleArticleClick)
-  fetchPosts(state.newsSources[0].url)
+  fetchPosts(state.newsSources[0])
 })()
