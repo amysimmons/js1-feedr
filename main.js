@@ -43,10 +43,10 @@
 		        <ul>
 		          <li><a href="#">News Source: <span>Source Name</span></a>
 		          	<ul>
-									${data.newsSources.map((item) => {
-										return `<li>${renderHeaderItem(item)}</li>`
-									}).join('')}
-								</ul>
+						${data.newsSources.map((item) => {
+							return `<li>${renderHeaderItem(item)}</li>`
+						}).join('')}
+					</ul>
 		          </li>
 		        </ul>
 		      </nav>
@@ -110,21 +110,6 @@
 	      </article>
 		`
 	}
-
-	// function renderArticlePopUp(data, into){
-	// 	into.innerHTML = `
-	// 	    <div id="pop-up">
-	// 	      <a href="#" class="close-pop-up">X</a>
-	// 	      <div class="wrapper">
-	// 	        <h1>${data.selectedArticle.title}</h1>
-	// 	        <p>
-	// 	        ${data.selectedArticle.description}
-	// 	        </p>
-	// 	        <a href="${data.selectedArticle.link}" class="pop-up-action" target="_blank">Read more from source</a>
-	// 	      </div>
-	// 	    </div>
-	// 	`
-	// }
 
 	function getNewsSource(name){
 		return state.newsSources.find((source) => {
