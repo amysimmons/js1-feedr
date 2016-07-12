@@ -15,7 +15,7 @@
 	  	{
 	  		name: 'Mashable',
 	  		url: 'https://crossorigin.me/http://mashable.com/stories.json',
-	  		selected: false,
+	  		selected: true,
 	  		mapDataFunction: mapMashableData
 	  	},
 	  	{
@@ -67,9 +67,12 @@
 	}
 
 	function renderArticleList(data, into) {
+
+		var selectedArticles = filterArticlesBySelectedSource()
+
 		into.innerHTML = `
 			<section id="main" class="wrapper">
-				${data.articles.map((article) => {
+				${selectedArticles.map((article) => {
 					return `${renderArticle(article)}`
 				}).join('')}
 			</section>
@@ -143,7 +146,6 @@
 	}
 
 	function mapRedditData(data){
-		debugger
 		data.data.children.forEach((dataSet) => {
 			var article = {
 				imgSrc: dataSet.data.thumbnail,
@@ -187,6 +189,18 @@
 		var d = new Date(0)
 		d.setUTCSeconds(utcSeconds)
 		return d
+	}
+
+	function filterArticlesBySelectedSource(){
+		var selected = state.newsSources.find((source)=>{
+			return source.selected
+		})
+
+		var filteredArticles = state.articles.filter((article) => {
+			return article.source == selected.name
+		})
+
+		return filteredArticles
 	}
 
   delegate('header','click','.news-source', handleFilterClick)
