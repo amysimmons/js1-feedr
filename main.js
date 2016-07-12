@@ -174,7 +174,7 @@
 		data.data.children.forEach((dataSet) => {
 			var article = {
 				imgSrc: dataSet.data.thumbnail,
-				link: 'reddit.com' + dataSet.data.permalink,
+				link: 'https://reddit.com' + dataSet.data.permalink,
 				title: dataSet.data.title,
 				category: dataSet.data.subreddit,
 				impressions: dataSet.data.score,
@@ -201,7 +201,7 @@
 
 	function handleFilterClick(event){
 		event.preventDefault()
-		var newsSource = getNewsSource(event.target.innerHTML);
+		var newsSource = getNewsSource(event.delegateTarget.innerHTML);
 		if(!newsSource.selected){
 			deselectHeaderItems();
 			newsSource.selected = true;
@@ -211,8 +211,7 @@
 
 	function handleArticleClick(event){
 		event.preventDefault()
-		//todo: remove hardcoded id
-		state.selectedArticle = getArticle(1)
+		state.selectedArticle = getArticle(event.delegateTarget.id)
 		renderArticleList(state, container)
 	}
 
