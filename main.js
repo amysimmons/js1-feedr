@@ -127,13 +127,14 @@
 		[data.new, data.hot, data.rising].forEach((dataSet)=>{
 			dataSet.forEach((item)=> {
 				var article = {
-					imgSrc: item.image,
+					imgSrc: item.thumbnail,
 					link: item.link,
 					title: item.title,
 					category: item.channel,
 					impressions: item.shares.total,
 					description: item.content.plain,
-					postDate: item.post_date
+					postDate: item.post_date,
+					source: "Mashable"
 				}
 				state.articles.push(article)
 			})
@@ -142,6 +143,20 @@
 	}
 
 	function mapRedditData(data){
+		debugger
+		data.data.children.forEach((dataSet) => {
+			var article = {
+				imgSrc: dataSet.data.thumbnail,
+				link: 'reddit.com' + dataSet.data.permalink,
+				title: dataSet.data.title,
+				category: dataSet.data.subreddit,
+				impressions: dataSet.data.score,
+				description: dataSet.data.title,
+				postDate: convertToDate(dataSet.data.created_utc),
+				source: "Reddit"
+			}
+			state.articles.push(article)
+		})
 		renderArticleList(state, container)
 	}
 
@@ -166,6 +181,12 @@
 
 	function handleArticleClick(event){
 		event.preventDefault()
+	}
+
+	function convertToDate(utcSeconds){
+		var d = new Date(0)
+		d.setUTCSeconds(utcSeconds)
+		return d
 	}
 
   delegate('header','click','.news-source', handleFilterClick)
