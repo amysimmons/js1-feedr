@@ -11,6 +11,7 @@
 	var container = document.querySelector('#container')
 	var state = {
 		loading: false,
+		id: 1,
 		newsSources: [
 	  	{
 	  		name: 'Mashable',
@@ -67,9 +68,8 @@
 	}
 
 	function renderArticleList(data, into) {
-
 		var selectedArticles = filterArticlesBySelectedSource()
-
+		if(!state.selectedArticle){
 		into.innerHTML = `
 			<section id="main" class="wrapper">
 				${selectedArticles.map((article) => {
@@ -77,45 +77,67 @@
 				}).join('')}
 			</section>
 		`
+		}else {
+			into.innerHTML = `
+				<div id="pop-up">
+			      <a href="#" class="close-pop-up">X</a>
+			      <div class="wrapper">
+			        <h1>${data.selectedArticle.title}</h1>
+			        <p>
+			        ${data.selectedArticle.description}
+			        </p>
+			        <a href="${data.selectedArticle.link}" class="pop-up-action" target="_blank">Read more from source</a>
+			      </div>
+			    </div>
+			  `
+		}
 	}
 
 	function renderArticle(article){
 		return `
-      <article class="article">
-        <section class="featured-image">
-          <img src="${article.imgSrc}" alt="" />
-        </section>
-        <section class="article-content">
-          <a href="#"><h3>${article.title}</h3></a>
-          <h6>${article.category}</h6>
-        </section>
-        <section class="impressions">
-          ${article.impressions}
-        </section>
-        <div class="clearfix"></div>
-      </article>
+	      <article class="article" id="${article.id}">
+	        <section class="featured-image">
+	          <img src="${article.imgSrc}" alt="" />
+	        </section>
+	        <section class="article-content">
+	          <a href="#"><h3>${article.title}</h3></a>
+	          <h6>${article.category}</h6>
+	        </section>
+	        <section class="impressions">
+	          ${article.impressions}
+	        </section>
+	        <div class="clearfix"></div>
+	      </article>
 		`
 	}
 
-	function renderArticlePopUp(){
-		return `
-	    <div id="pop-up">
-	      <a href="#" class="close-pop-up">X</a>
-	      <div class="wrapper">
-	        <h1>Article title here</h1>
-	        <p>
-	        Article description/content here.
-	        </p>
-	        <a href="#" class="pop-up-action" target="_blank">Read more from source</a>
-	      </div>
-	    </div>
-		`
-	}
+	// function renderArticlePopUp(data, into){
+	// 	into.innerHTML = `
+	// 	    <div id="pop-up">
+	// 	      <a href="#" class="close-pop-up">X</a>
+	// 	      <div class="wrapper">
+	// 	        <h1>${data.selectedArticle.title}</h1>
+	// 	        <p>
+	// 	        ${data.selectedArticle.description}
+	// 	        </p>
+	// 	        <a href="${data.selectedArticle.link}" class="pop-up-action" target="_blank">Read more from source</a>
+	// 	      </div>
+	// 	    </div>
+	// 	`
+	// }
 
 	function getNewsSource(name){
 		return state.newsSources.find((source) => {
 			if (source.name == name){
 				return source;
+			}
+		})
+	}
+
+	function getArticle(id){
+		return state.articles.find((article) => {
+			if (article.id == id){
+				return article;
 			}
 		})
 	}
@@ -137,8 +159,11 @@
 					impressions: item.shares.total,
 					description: item.content.plain,
 					postDate: item.post_date,
-					source: "Mashable"
+					source: "Mashable",
+					id: state.id
 				}
+				state.id++;
+				console.log(article.postDate)
 				state.articles.push(article)
 			})
 		})
@@ -155,8 +180,11 @@
 				impressions: dataSet.data.score,
 				description: dataSet.data.title,
 				postDate: convertToDate(dataSet.data.created_utc),
-				source: "Reddit"
+				source: "Reddit",
+				id: state.id
 			}
+			state.id++;
+			console.log('reddit', article.postDate)
 			state.articles.push(article)
 		})
 		renderArticleList(state, container)
@@ -183,6 +211,14 @@
 
 	function handleArticleClick(event){
 		event.preventDefault()
+		//todo: remove hardcoded id
+		state.selectedArticle = getArticle(1)
+		renderArticleList(state, container)
+	}
+
+	function handleClosePopUpClick(){
+		delete state["selectedArticle"]
+		renderArticleList(state, container)
 	}
 
 	function convertToDate(utcSeconds){
@@ -204,6 +240,9 @@
 	}
 
   delegate('header','click','.news-source', handleFilterClick)
-  delegate('header','click','.article', handleArticleClick)
+  delegate('#container','click','.article', handleArticleClick)
+delegate('#container','click','.close-pop-up', handleClosePopUpClick)
+
+  
   fetchPosts(state.newsSources[0])
 })()
