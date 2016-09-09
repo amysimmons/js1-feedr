@@ -1,10 +1,3 @@
-/**
- * Project 2: Feedr
- * ====
- *
- * See the README.md for instructions
- */
-
 (function() {
 
 	var header = document.querySelector('header')
@@ -225,8 +218,7 @@
 
   delegate('header','click','.news-source', handleFilterClick)
   delegate('#container','click','.article', handleArticleClick)
-delegate('#container','click','.close-pop-up', handleClosePopUpClick)
+  delegate('#container','click','.close-pop-up', handleClosePopUpClick)
 
-  
   fetchPosts(state.newsSources[0])
 })()
